@@ -35,40 +35,40 @@ public class MySQL {
     // Метод для создания таблицы users
     private static void createTables() throws SQLException {
         String createUsersTableSQL = "CREATE TABLE IF NOT EXISTS users ("
-                + "username TEXT NOT NULL UNIQUE,"
-                + "email TEXT NOT NULL,"
-                + "password TEXT NOT NULL,"
+                + "username VARCHAR(255) NOT NULL UNIQUE,"
+                + "email VARCHAR(255) NOT NULL,"
+                + "password VARCHAR(255) NOT NULL,"
                 + "socialrating INTEGER DEFAULT 0)";
 
         String createFriendRequestsTableSQL = "CREATE TABLE IF NOT EXISTS friend_requests ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "sender TEXT NOT NULL,"
-                + "receiver TEXT NOT NULL,"
-                + "status TEXT NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'ACCEPTED', 'REJECTED')),"
+                + "id INTEGER PRIMARY KEY AUTO_INCREMENT,"
+                + "sender VARCHAR(255) NOT NULL,"
+                + "receiver VARCHAR(255) NOT NULL,"
+                + "status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'ACCEPTED', 'REJECTED')),"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (sender) REFERENCES users(username) ON DELETE CASCADE,"
                 + "FOREIGN KEY (receiver) REFERENCES users(username) ON DELETE CASCADE,"
                 + "UNIQUE(sender, receiver))";
         String createPostsTableSQL = "CREATE TABLE IF NOT EXISTS posts ("
-                + "post_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "username TEXT NOT NULL,"
-                + "content TEXT NOT NULL,"
+                + "post_id INTEGER PRIMARY KEY AUTO_INCREMENT,"
+                + "username VARCHAR(255) NOT NULL,"
+                + "content VARCHAR(255) NOT NULL,"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "like_count INTEGER DEFAULT 0,"
                 + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE)";
         String createCommentsTableSQL = "CREATE TABLE IF NOT EXISTS comments ("
-                + "comment_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "comment_id INTEGER PRIMARY KEY AUTO_INCREMENT ,"
                 + "post_id INTEGER NOT NULL,"
-                + "username TEXT NOT NULL,"
-                + "content TEXT NOT NULL,"
+                + "username VARCHAR(255) NOT NULL,"
+                + "content VARCHAR(1000) NOT NULL,"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,"
                 + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE)";
         String createLikesTableSQL = "CREATE TABLE IF NOT EXISTS likes ("
-                + "like_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "like_id INTEGER PRIMARY KEY AUTO_INCREMENT,"
                 + "post_id INTEGER NOT NULL,"
-                + "username TEXT NOT NULL,"
+                + "username VARCHAR(255) NOT NULL,"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,"
                 + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,"
@@ -80,7 +80,10 @@ public class MySQL {
             stmt.execute(createCommentsTableSQL);
             stmt.execute(createLikesTableSQL);
             System.out.println("Таблицы users, friend_requests, posts, comments, likes проверены/созданы");
-        }
+        } catch (SQLException e) {
+        System.err.println("Ошибка создания таблиц: " + e.getMessage());
+        e.printStackTrace(); // Критично для отладки!
+    }
     }
     /**-------------------------------------------users--------------------------------------------------------**/
     public boolean saveUser(String username, String email, String password, int socialrating) {
