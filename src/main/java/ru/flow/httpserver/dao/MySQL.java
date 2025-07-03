@@ -10,8 +10,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLite {
-    private static final String DB_URL = "jdbc:sqlite:C:/httpserverDB/database.db";
+public class MySQL {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/social_network?useSSL=false&serverTimezone=UTC";
+    private static final String DB_USER = "social_network_admin";
+    private static final String DB_PASSWORD = "Superamin020304";
     private static Connection connection;
     private static PreparedStatement prstatmt;
     private static ResultSet resSet;
@@ -19,23 +21,10 @@ public class SQLite {
     // Инициализация соединения и создание таблицы при первом подключении
     public static void connect() throws ClassNotFoundException, SQLException {
         try {
-            String folderPath = "C:/httpserverDB";
-            File folder = new File(folderPath);
-
-            if (!folder.exists()) {
-                boolean createrd = folder.mkdir();
-                if (createrd) {
-                    System.out.println("Папка httpserverDB создана на диске C");
-                } else {
-                    System.out.println("Не удалось создать папку: " + folderPath);
-                }
-            } else {
-                System.out.println("Папка уже существует: " + folderPath);
-            }
-
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection(DB_URL);
-            createUsersTable(); // Создаём таблицу при подключении
+            // Изменяем драйвер на MySQL
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            createTables(); // Создаём таблицы при подключении
             System.out.println("База подключена и таблицы проверены!");
         } catch (SQLException e) {
             System.err.println("Ошибка подключения к базе данных: " + e.getMessage());
@@ -44,7 +33,7 @@ public class SQLite {
     }
 
     // Метод для создания таблицы users
-    private static void createUsersTable() throws SQLException {
+    private static void createTables() throws SQLException {
         String createUsersTableSQL = "CREATE TABLE IF NOT EXISTS users ("
                 + "username TEXT NOT NULL UNIQUE,"
                 + "email TEXT NOT NULL,"

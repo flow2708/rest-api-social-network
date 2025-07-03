@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.services.HtmlBuilderService;
 import ru.flow.httpserver.utils.HtmlUtils;
 
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 public class CommentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        SQLite db = new SQLite();
+        MySQL db = new MySQL();
         String post_id = req.getParameter("post_id");
         PrintWriter out = resp.getWriter();
 

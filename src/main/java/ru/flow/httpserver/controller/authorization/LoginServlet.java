@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.flow.httpserver.utils.PasswordUtils;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         try {
-            SQLite db = new SQLite();
+            MySQL db = new MySQL();
             User user = db.findByUsername(username);
 
             if (user == null) {

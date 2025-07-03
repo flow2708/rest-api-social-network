@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.utils.HtmlUtils;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.List;
 @WebServlet("/friendsList")
 public class FriendsListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        SQLite db = new SQLite();
+        MySQL db = new MySQL();
         HttpSession session = req.getSession();
         User currentUser = (User) session.getAttribute("user");
         PrintWriter out = resp.getWriter();

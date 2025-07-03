@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.services.HtmlBuilderService;
 import ru.flow.httpserver.utils.HtmlUtils;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class SearchServlet extends HttpServlet {
             return;
         }
 
-        SQLite db = new SQLite();
+        MySQL db = new MySQL();
         User foundUser = db.findByUsername(searchQuery);
 
         // Проверка существования пользователя

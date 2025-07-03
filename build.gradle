@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
     providedCompile 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    implementation 'org.xerial:sqlite-jdbc:3.44.1.0'
+    implementation 'mysql:mysql-connector-java:8.0.34'
     implementation 'org.mindrot:jbcrypt:0.4'
 }
 

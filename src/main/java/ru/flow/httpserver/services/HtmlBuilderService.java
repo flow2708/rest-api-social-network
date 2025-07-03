@@ -2,7 +2,7 @@ package ru.flow.httpserver.services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.Comment;
 import ru.flow.httpserver.entities.Post;
 import ru.flow.httpserver.entities.User;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class HtmlBuilderService {
-    public static void renderUserPostsList(PrintWriter out, SQLite db, String username, HttpServletRequest req)
+    public static void renderUserPostsList(PrintWriter out, MySQL db, String username, HttpServletRequest req)
             throws SQLException, ClassNotFoundException {
 
         List<Post> posts = db.getUserPostsList(username);
@@ -58,7 +58,7 @@ public class HtmlBuilderService {
         }
         out.println("</div>");
     }
-    public static void renderCommentList(PrintWriter out, SQLite db, int post_id) throws SQLException, ClassNotFoundException {
+    public static void renderCommentList(PrintWriter out, MySQL db, int post_id) throws SQLException, ClassNotFoundException {
         List<Comment> comments = db.getCommentList(post_id);
 
         if (comments == null || comments.isEmpty()) {

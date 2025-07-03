@@ -6,14 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 import ru.flow.httpserver.services.HtmlBuilderService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Date;
 
 @WebServlet("/profile")
 public class ProfileServlet extends HttpServlet {
@@ -27,7 +26,7 @@ public class ProfileServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-        SQLite db = new SQLite();
+        MySQL db = new MySQL();
         PrintWriter out = resp.getWriter();
         resp.setContentType("text/html;charset=UTF-8");
 

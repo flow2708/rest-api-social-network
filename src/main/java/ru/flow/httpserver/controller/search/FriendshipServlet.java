@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import ru.flow.httpserver.dao.SQLite;
+import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 @WebServlet("/friendship")
 public class FriendshipServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        SQLite db = new SQLite();
+        MySQL db = new MySQL();
         String action = req.getParameter("action");
         String targetUsername = req.getParameter("target");
         int requestId;
