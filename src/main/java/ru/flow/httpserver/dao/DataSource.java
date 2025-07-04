@@ -13,6 +13,11 @@ public class DataSource {
         try {
             HikariConfig config = new HikariConfig();
 
+            System.out.println("=== Проверка переменных окружения ===");
+            System.out.println("JDBC_URL: " + System.getenv("JDBC_URL"));
+            System.out.println("DB_USER: " + System.getenv("DB_USER"));
+            System.out.println("DB_PASSWORD: " + (System.getenv("DB_PASSWORD") != null ? "***" : "null"));
+            
             String jdbcUrl = System.getenv("JDBC_URL");
             String dbUser = System.getenv("DB_USER");
             String dbPassword = System.getenv("DB_PASSWORD");
