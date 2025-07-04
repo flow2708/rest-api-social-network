@@ -28,7 +28,7 @@ public class DataSource {
             config.setConnectionTimeout(30000);
             config.setIdleTimeout(600000);
             config.setMaxLifetime(1800000);
-            config.addDataSourceProperty("sslMode", "REQUIRED");
+            //config.addDataSourceProperty("sslMode", "REQUIRED");
             config.addDataSourceProperty("serverTimezone", "UTC");
             config.addDataSourceProperty("cachePrepStmts", "true");
             config.addDataSourceProperty("prepStmtCacheSize", "250");
