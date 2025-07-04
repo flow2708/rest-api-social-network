@@ -11,13 +11,12 @@ public class InitServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             System.out.println("Инициализация БД...");
-            MySQL db = new MySQL();
-            db.connect();
+            MySQL.initializeTables();
             System.out.println("БД успешно инициализирована");
         } catch (Exception e) {
-            System.err.println("Ошибка инициализации БД:");
+            System.err.println("Критическая ошибка инициализации БД:");
             e.printStackTrace();
-            throw new ServletException(e);
+            throw new ServletException("Ошибка инициализации БД: " + e.getMessage(), e);
         }
     }
 }

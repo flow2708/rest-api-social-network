@@ -5,9 +5,9 @@ import ru.flow.httpserver.entities.Post;
 import ru.flow.httpserver.utils.PasswordUtils;
 import ru.flow.httpserver.entities.User;
 
-import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MySQL {
@@ -16,7 +16,7 @@ public class MySQL {
     private static final String DB_PASSWORD = "Superamin020304";
 
     // Метод для создания таблицы users
-    private static void createTables() throws SQLException {
+    public static void initializeTables() throws SQLException {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
         stmt.execute("CREATE TABLE IF NOT EXISTS users ("
@@ -26,22 +26,22 @@ public class MySQL {
                 + "socialrating INTEGER DEFAULT 0)");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS friend_requests ("
-                + "id INTEGER PRIMARY KEY AUTO_INCREMENT,"
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "sender VARCHAR(255) NOT NULL,"
                 + "receiver VARCHAR(255) NOT NULL,"
-                + "status VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING', 'ACCEPTED', 'REJECTED')),"
+                + "status ENUM('PENDING', 'ACCEPTED', 'REJECTED') DEFAULT 'PENDING',"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (sender) REFERENCES users(username) ON DELETE CASCADE,"
                 + "FOREIGN KEY (receiver) REFERENCES users(username) ON DELETE CASCADE,"
-                + "UNIQUE(sender, receiver))");
+                + "UNIQUE(sender, receiver)) ENGINE=InnoDB");
             stmt.execute("CREATE TABLE IF NOT EXISTS posts ("
-                + "post_id INTEGER PRIMARY KEY AUTO_INCREMENT,"
+                + "post_id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "username VARCHAR(255) NOT NULL,"
-                + "content VARCHAR(255) NOT NULL,"
+                + "content TEXT NOT NULL,"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-                + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-                + "like_count INTEGER DEFAULT 0,"
-                + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE)");
+                + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
+                + "like_count INT DEFAULT 0,"
+                + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE) ENGINE=InnoDB");
             stmt.execute("CREATE TABLE IF NOT EXISTS comments ("
                 + "comment_id INTEGER PRIMARY KEY AUTO_INCREMENT ,"
                 + "post_id INTEGER NOT NULL,"
@@ -85,7 +85,7 @@ public class MySQL {
             int affectedRows = prstatmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Ошибка при сохранении пользователя: " + e.getMessage());
+            System.err.println("Ошибка в методе saveUser: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -95,22 +95,23 @@ public class MySQL {
         String findUser = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(findUser);
-             ResultSet resSet = prstatmt.executeQuery()) {
-
+             PreparedStatement prstatmt = conn.prepareStatement(findUser)) {
             prstatmt.setString(1, username);
 
-
+            try (ResultSet resSet = prstatmt.executeQuery()) {
             if (resSet.next()) {
                 return new User(
                         resSet.getString("username"),
                         resSet.getString("email"),
                         resSet.getString("password"),
                         resSet.getInt("socialrating")
-                );
+                    );
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Ошибка при поиске пользователя: " + e.getMessage());
+            System.err.println("Ошибка в методе findByUsername: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
         return null;
     }
@@ -130,7 +131,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе sendFriendRequest: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean acceptFriendRequest(int requestId, String receiver) {
@@ -153,7 +156,9 @@ public class MySQL {
 
             return updated > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе acceptFriendRequest: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -169,7 +174,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе rejectFriendRequest: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean cancelFriendRequest(int requestId, String senderUsername) {
@@ -182,7 +189,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе cancelFriendRequest: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean removeFriend(String user1, String user2) {
@@ -199,7 +208,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе removeFriend: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -209,16 +220,19 @@ public class MySQL {
                 "ORDER BY created_at DESC LIMIT 1";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery()) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, user1);
             prstatmt.setString(2, user2);
             prstatmt.setString(3, user2);
             prstatmt.setString(4, user1);
 
-            return rs.next() ? rs.getString("status") : "NOT_EXISTS";
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                return resSet.next() ? resSet.getString("status") : "NOT_EXISTS";
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getFriendshipStatus: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
     /**
@@ -232,14 +246,17 @@ public class MySQL {
                 "WHERE sender = ? AND receiver = ? AND status = 'PENDING' LIMIT 1";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery()) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, sender);
             prstatmt.setString(2, receiver);
 
-            return rs.next() ? rs.getInt("id") : -1;
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                return resSet.next() ? resSet.getInt("id") : -1;
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getRequestId: " + e.getMessage());
+            e.printStackTrace();
+            return -1;
         }
     }
 
@@ -257,9 +274,14 @@ public class MySQL {
              PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, potentialSender);
             prstatmt.setString(2, receiver);
-            return prstatmt.executeQuery().next();
+
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                return resSet.next();
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе isRequestSender: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public List<String> getFriendRequestSenders(String receiver) {
@@ -267,15 +289,18 @@ public class MySQL {
         String sql = "SELECT sender FROM friend_requests WHERE receiver = ? AND status = 'PENDING'";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery();) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, receiver);
 
-            while (rs.next()) {
-                senders.add(rs.getString("sender"));
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                while (resSet.next()) {
+                    senders.add(resSet.getString("sender"));
+                }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getFriendRequestSenders: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
         }
 
         return senders;
@@ -291,23 +316,26 @@ public class MySQL {
                 "WHERE (sender = ? OR receiver = ?) AND status = 'ACCEPTED'";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery()) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, username);
             prstatmt.setString(2, username);
 
-            while (rs.next()) {
-                String sender = rs.getString("sender");
-                String receiver = rs.getString("receiver");
-                // Добавляем в список противоположного пользователя
-                if (sender.equals(username)) {
-                    friends.add(receiver);
-                } else {
-                    friends.add(sender);
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                while (resSet.next()) {
+                    String sender = resSet.getString("sender");
+                    String receiver = resSet.getString("receiver");
+                    // Добавляем в список противоположного пользователя
+                    if (sender.equals(username)) {
+                        friends.add(receiver);
+                    } else {
+                        friends.add(sender);
+                    }
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getFriendsList: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
         }
 
         return friends;
@@ -324,7 +352,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе createPost: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public List<Post> getUserPostsList(String username) {
@@ -332,20 +362,24 @@ public class MySQL {
         String sql = "SELECT post_id, username, content, like_count FROM posts WHERE username = ?";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery()) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setString(1, username);
-                while (rs.next()) {
+
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                while (resSet.next()) {
                     Post post = new Post(
-                            rs.getInt("post_id"),
-                            rs.getString("username"),
-                            rs.getString("content"),
-                            rs.getInt("like_count")
+                            resSet.getInt("post_id"),
+                            resSet.getString("username"),
+                            resSet.getString("content"),
+                            resSet.getInt("like_count")
                     );
                     userPostsList.add(post);
                 }
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getUserPostsList: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
         }
         return userPostsList;
     }
@@ -358,7 +392,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе addLikeToPost: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean removeLikeFromPost(int post_id){
@@ -369,7 +405,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе removeLikeFromPost: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     /**------------------------------------------------------------------------------------------------------------------**/
@@ -382,9 +420,12 @@ public class MySQL {
             prstatmt.setInt(1, post_id);
             prstatmt.setString(2, username);
             prstatmt.setString(3, content);
+
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе createComment: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public List<Comment> getCommentList(int post_id) {
@@ -392,19 +433,23 @@ public class MySQL {
         String sql = "SELECT post_id, username, content FROM comments WHERE post_id = ?";
 
         try (Connection conn = getConnection();
-             PreparedStatement prstatmt = conn.prepareStatement(sql);
-             ResultSet rs = prstatmt.executeQuery()) {
+             PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setInt(1, post_id);
-                while (rs.next()) {
+
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                while (resSet.next()) {
                     Comment comment = new Comment(
-                            rs.getInt("post_id"),
-                            rs.getString("username"),
-                            rs.getString("content")
+                            resSet.getInt("post_id"),
+                            resSet.getString("username"),
+                            resSet.getString("content")
                     );
                     commentList.add(comment);
                 }
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе getCommentList: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
         }
         return commentList;
     }
@@ -420,7 +465,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе createLike: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean removeLike(int post_id, String username) {
@@ -433,7 +480,9 @@ public class MySQL {
 
             return prstatmt.executeUpdate() > 0;
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе removeLike: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     public boolean isUserLiked(int post_id, String username) {
@@ -443,9 +492,14 @@ public class MySQL {
              PreparedStatement prstatmt = conn.prepareStatement(sql)) {
             prstatmt.setInt(1, post_id);
             prstatmt.setString(2, username);
-            return prstatmt.executeQuery().next();
+
+            try (ResultSet resSet = prstatmt.executeQuery()) {
+                return resSet.next();
+            }
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Ошибка в методе isUserLiked: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     /**------------------------------------------------------------------------------------------------------------------**/
@@ -470,6 +524,6 @@ public class MySQL {
             }
         }
     }
-    
+
      */
 }
