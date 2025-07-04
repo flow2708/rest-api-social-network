@@ -20,7 +20,7 @@ public class MySQL {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
         stmt.execute("CREATE TABLE IF NOT EXISTS users ("
-                + "username VARCHAR(255) NOT NULL UNIQUE,"
+                + "username VARCHAR(255) PRIMARY KEY,"
                 + "email VARCHAR(255) NOT NULL,"
                 + "password VARCHAR(255) NOT NULL,"
                 + "socialrating INTEGER DEFAULT 0)");
@@ -43,13 +43,13 @@ public class MySQL {
                 + "like_count INT DEFAULT 0,"
                 + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE) ENGINE=InnoDB");
             stmt.execute("CREATE TABLE IF NOT EXISTS comments ("
-                + "comment_id INTEGER PRIMARY KEY AUTO_INCREMENT ,"
+                + "comment_id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "post_id INTEGER NOT NULL,"
                 + "username VARCHAR(255) NOT NULL,"
                 + "content VARCHAR(1000) NOT NULL,"
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,"
-                + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE)");
+                + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE) ENGINE=InnoDB");
             stmt.execute("CREATE TABLE IF NOT EXISTS likes ("
                 + "like_id INTEGER PRIMARY KEY AUTO_INCREMENT,"
                 + "post_id INTEGER NOT NULL,"
@@ -57,7 +57,7 @@ public class MySQL {
                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
                 + "FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,"
                 + "FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,"
-                + "UNIQUE(post_id, username))");
+                + "UNIQUE(post_id, username)) ENGINE=InnoDB");
 
             System.out.println("Таблицы users, friend_requests, posts, comments, likes проверены/созданы");
         } catch (SQLException | ClassNotFoundException e) {
@@ -430,15 +430,16 @@ public class MySQL {
     }
     public List<Comment> getCommentList(int post_id) {
         List<Comment> commentList = new ArrayList<>();
-        String sql = "SELECT post_id, username, content FROM comments WHERE post_id = ?";
+        String sql = "SELECT comment_id, post_id, username, content FROM comments WHERE post_id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement prstatmt = conn.prepareStatement(sql)) {
-            prstatmt.setInt(1, post_id);
+            prstatmt.setInt(2, post_id);
 
             try (ResultSet resSet = prstatmt.executeQuery()) {
                 while (resSet.next()) {
                     Comment comment = new Comment(
+                            resSet.getInt("comment_id"),
                             resSet.getInt("post_id"),
                             resSet.getString("username"),
                             resSet.getString("content")
