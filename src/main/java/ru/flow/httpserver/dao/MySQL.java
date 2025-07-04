@@ -18,7 +18,8 @@ public class MySQL {
                 + "username VARCHAR(255) PRIMARY KEY,"
                 + "email VARCHAR(255) NOT NULL,"
                 + "password VARCHAR(255) NOT NULL,"
-                + "socialrating INTEGER DEFAULT 0)");
+                + "socialrating INTEGER DEFAULT 0,"
+                + "ip_address VARCHAR(45) DEFAULT NULL)");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS friend_requests ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
@@ -64,8 +65,8 @@ public class MySQL {
         return DataSource.getConnection(); //DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
     /**-------------------------------------------users--------------------------------------------------------**/
-    public boolean saveUser(String username, String email, String password, int socialrating) {
-        String insertUser = "INSERT INTO users (username, email, password, socialrating) VALUES (?, ?, ?, ?)";
+    public boolean saveUser(String username, String email, String password, int socialrating, String ip_address) {
+        String insertUser = "INSERT INTO users (username, email, password, socialrating, ip_address) VALUES (?, ?, ?, ?, ?)";
         String hashedPassword = PasswordUtils.hashPassword(password);
 
         try (Connection conn = getConnection();
@@ -76,6 +77,7 @@ public class MySQL {
             prstatmt.setString(2, email);
             prstatmt.setString(3, hashedPassword);
             prstatmt.setInt(4, socialrating);
+            prstatmt.setString(5, ip_address);
 
             int affectedRows = prstatmt.executeUpdate();
             return affectedRows > 0;

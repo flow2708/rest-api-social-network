@@ -14,10 +14,10 @@ import java.io.IOException;
 public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String username = req.getParameter("username");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        String ipAddress = req.getHeader("X-FORWARDED-FOR");
 
         try {
             MySQL db = new MySQL();
@@ -34,7 +34,11 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            if (!db.saveUser(username, email, password, 0)) {
+            if (ipAddress == null) {
+                ipAddress = req.getRemoteAddr();
+            }
+
+            if (!db.saveUser(username, email, password, 0, ipAddress)) {
                 resp.sendRedirect("register.html?error=save_failed");
                 return;
             }
