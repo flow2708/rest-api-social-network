@@ -26,6 +26,7 @@ public class DataSource {
                 throw new IllegalStateException("Не найдены переменные окружения!");
             }
 
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
             config.setJdbcUrl(System.getenv("JDBC_URL"));
             config.setUsername(System.getenv("DB_USER"));
             config.setPassword(System.getenv("DB_PASSWORD"));
@@ -34,9 +35,10 @@ public class DataSource {
             config.setIdleTimeout(600000);
             config.setMaxLifetime(1800000);
             //config.addDataSourceProperty("sslMode", "REQUIRED");
-            config.addDataSourceProperty("serverTimezone", "UTC");
+            //config.addDataSourceProperty("serverTimezone", "UTC");
             config.addDataSourceProperty("cachePrepStmts", "true");
             config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
             dataSource = new HikariDataSource(config);
             testConnection();
@@ -52,7 +54,12 @@ public class DataSource {
         }
     }
     public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return dataSource.getConnection();
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("MySQL Driver not found", e);
+        }
     }
     public static void close() {
         if (dataSource != null) {

@@ -70,6 +70,7 @@ public class MySQL {
 
         try (Connection conn = getConnection();
             PreparedStatement prstatmt = conn.prepareStatement(insertUser)) {
+            initializeTables(); /***закомментировать для неинициализации таблицы***/
 
             prstatmt.setString(1, username);
             prstatmt.setString(2, email);
