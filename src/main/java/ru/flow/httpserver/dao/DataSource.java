@@ -12,6 +12,15 @@ public class DataSource {
     static {
         try {
             HikariConfig config = new HikariConfig();
+
+            String jdbcUrl = System.getenv("JDBC_URL");
+            String dbUser = System.getenv("DB_USER");
+            String dbPassword = System.getenv("DB_PASSWORD");
+
+            if(jdbcUrl == null || dbUser == null || dbPassword == null) {
+                throw new IllegalStateException("Не найдены переменные окружения!");
+            }
+
             config.setJdbcUrl(System.getenv("JDBC_URL"));
             config.setUsername(System.getenv("DB_USER"));
             config.setPassword(System.getenv("DB_PASSWORD"));
