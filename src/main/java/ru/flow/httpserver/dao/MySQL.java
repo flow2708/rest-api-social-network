@@ -16,7 +16,7 @@ public class MySQL {
     private static final String DB_PASSWORD = "Superamin020304";
 
     // Метод для создания таблицы users
-    public static void initializeTables() throws SQLException {
+    public final void initializeTables() throws SQLException {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
         stmt.execute("CREATE TABLE IF NOT EXISTS users ("
@@ -65,7 +65,7 @@ public class MySQL {
             e.printStackTrace();
         }
     }
-    private static Connection getConnection() throws SQLException, ClassNotFoundException {
+    public static Connection getConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
