@@ -12,10 +12,11 @@ dependencies {
     providedCompile 'jakarta.servlet:jakarta.servlet-api:6.0.0'
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'com.zaxxer:HikariCP:6.3.0'
 }
 
 war {
-    archiveFileName = 'demo.war'  // Имя WAR-файла
+    archiveFileName = 'ROOT.war'  // Имя WAR-файла
     from 'src/main/webapp'       // Включаем статические файлы
 }
 
