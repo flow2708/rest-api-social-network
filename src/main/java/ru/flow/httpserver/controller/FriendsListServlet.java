@@ -38,7 +38,6 @@ public class FriendsListServlet extends HttpServlet {
         out.println("<h1>Список друзей</h1>");
 
         List<String> friendsList;
-        try {
             friendsList = db.getFriendsList(currentUser.getUsername());
 
             if (friendsList.isEmpty()) {
@@ -52,10 +51,6 @@ public class FriendsListServlet extends HttpServlet {
                     out.println("</div>");
                 }
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            out.println("<p>Произошла ошибка при загрузке списка друзей.</p>");
-            e.printStackTrace();
-        }
 
         // Завершение HTML-документа
         out.println("</body>");

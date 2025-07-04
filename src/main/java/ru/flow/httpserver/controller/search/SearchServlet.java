@@ -52,11 +52,9 @@ public class SearchServlet extends HttpServlet {
 
         // Получаем статус дружбы
         String status = null;
-        try {
-            status = db.getFriendshipStatus(currentUser.getUsername(), foundUser.getUsername());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+        status = db.getFriendshipStatus(currentUser.getUsername(), foundUser.getUsername());
+
 
         // Формируем ответ
         resp.setContentType("text/html;charset=UTF-8");
@@ -79,42 +77,29 @@ public class SearchServlet extends HttpServlet {
                 break;
 
             case "PENDING":
-                try {
                     if (db.isRequestSender(foundUser.getUsername(), currentUser.getUsername())) {
                         out.println("<p>Ожидает вашего подтверждения</p>");
                         out.println("<form action='friendship' method='POST'>");
                         out.println("<input type='hidden' name='action' value='accept_request'>");
-                        try {
-                            out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+
+                        out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
                         out.println("<button type='submit'>Принять</button>");
                         out.println("</form>");
                         out.println("<form action='friendship' method='POST'>");
                         out.println("<input type='hidden' name='action' value='reject_request'>");
-                        try {
-                            out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+
+                        out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
                         out.println("<button type='submit'>Отклонить</button>");
                         out.println("</form>");
                     } else {
                         out.println("<p>Запрос отправлен</p>");
                         out.println("<form action='friendship' method='POST'>");
                         out.println("<input type='hidden' name='action' value='cancel_request'>");
-                        try {
-                            out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(currentUser.getUsername(), foundUser.getUsername()) + "'>");
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+
+                        out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(currentUser.getUsername(), foundUser.getUsername()) + "'>");
                         out.println("<button type='submit'>Отменить запрос</button>");
                         out.println("</form>");
                     }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
                 break;
 
             case "ACCEPTED":

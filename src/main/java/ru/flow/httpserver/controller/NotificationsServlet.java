@@ -27,7 +27,6 @@ public class NotificationsServlet extends HttpServlet {
             return; // Добавлен return для прерывания выполнения
         }
 
-        try {
             List<String> requests = db.getFriendRequestSenders(currentUser.getUsername());
             resp.setContentType("text/html;charset=UTF-8");
 
@@ -60,10 +59,6 @@ public class NotificationsServlet extends HttpServlet {
 
                 out.println("</div>");
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            out.println("<p>Ошибка загрузки уведомлений</p>");
-            e.printStackTrace();
-        }
     }
 }
 

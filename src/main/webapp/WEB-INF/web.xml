@@ -8,6 +8,12 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
+    <env-entry>
+        <env-entry-name>JDBC_URL</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>jdbc:mysql://localhost:3306/social_network</env-entry-value>
+    </env-entry>
+
     <error-page>
         <error-code>404</error-code>
         <location>/error404.html</location>

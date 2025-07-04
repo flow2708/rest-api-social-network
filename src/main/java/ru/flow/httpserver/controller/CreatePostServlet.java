@@ -30,14 +30,10 @@ public class CreatePostServlet extends HttpServlet {
             return;
         }
 
-        try {
             if (db.createPost(currentUser.getUsername(), content)) {
                 resp.sendRedirect("profile");
             } else {
                 resp.sendError(500, "Ошибка при создании поста!");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

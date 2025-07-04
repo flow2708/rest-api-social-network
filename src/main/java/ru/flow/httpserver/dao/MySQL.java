@@ -11,11 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class MySQL {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/social_network?useSSL=false&serverTimezone=UTC";
-    private static final String DB_USER = "social_network_admin";
-    private static final String DB_PASSWORD = "Superamin020304";
-
-    // Метод для создания таблицы users
     public final void initializeTables() throws SQLException {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
@@ -66,8 +61,7 @@ public class MySQL {
         }
     }
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return DataSource.getConnection(); //DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
     /**-------------------------------------------users--------------------------------------------------------**/
     public boolean saveUser(String username, String email, String password, int socialrating) {
@@ -383,7 +377,7 @@ public class MySQL {
         }
         return userPostsList;
     }
-    public boolean addLikeToPost(int post_id) {
+    public synchronized boolean addLikeToPost(int post_id) {
         String sql = "UPDATE posts SET like_count = like_count + 1 WHERE post_id = ?";
 
         try (Connection conn = getConnection();
@@ -397,7 +391,7 @@ public class MySQL {
             return false;
         }
     }
-    public boolean removeLikeFromPost(int post_id){
+    public synchronized boolean removeLikeFromPost(int post_id){
         String sql = "UPDATE posts Set like_count = like_count - 1 WHERE post_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement prstatmt = conn.prepareStatement(sql)) {
@@ -434,7 +428,7 @@ public class MySQL {
 
         try (Connection conn = getConnection();
              PreparedStatement prstatmt = conn.prepareStatement(sql)) {
-            prstatmt.setInt(2, post_id);
+            prstatmt.setInt(1, post_id);
 
             try (ResultSet resSet = prstatmt.executeQuery()) {
                 while (resSet.next()) {
@@ -456,7 +450,7 @@ public class MySQL {
     }
     /**------------------------------------------------------------------------------------------------------------------**/
     /**-------------------------------------------likes--------------------------------------------------------**/
-    public boolean createLike(int post_id, String username) {
+    public synchronized boolean createLike(int post_id, String username) {
         String sql = "INSERT INTO likes (post_id, username) VALUES (?, ?) ";
 
         try (Connection conn = getConnection();
@@ -471,7 +465,7 @@ public class MySQL {
             return false;
         }
     }
-    public boolean removeLike(int post_id, String username) {
+    public synchronized boolean removeLike(int post_id, String username) {
         String sql = "DELETE from likes WHERE post_id = ? AND username = ?";
 
         try (Connection conn = getConnection();
@@ -486,7 +480,7 @@ public class MySQL {
             return false;
         }
     }
-    public boolean isUserLiked(int post_id, String username) {
+    public synchronized boolean isUserLiked(int post_id, String username) {
         String sql = "SELECT 1 FROM likes WHERE post_id = ? AND username = ?";
 
         try (Connection conn = getConnection();

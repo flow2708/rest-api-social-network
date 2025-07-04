@@ -33,15 +33,11 @@ public class CreateCommentServlet extends HttpServlet {
             return;
         }
 
-        try {
             if (db.createComment(post_id, username, content)) {
                 resp.sendRedirect("comment?post_id=" + post_id);
             } else {
                 resp.sendError(500, "Ошибка при создании поста!");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 

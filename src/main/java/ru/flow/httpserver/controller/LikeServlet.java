@@ -29,7 +29,6 @@ public class LikeServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         boolean success = false;
 
-        try {
             switch (action) {
                 case "like":
                     success = db.addLikeToPost(post_id) && db.createLike(post_id, username);
@@ -53,8 +52,5 @@ public class LikeServlet extends HttpServlet {
             } else {
                 resp.sendRedirect(req.getContextPath() + "mainpage.html");
             }
-        } catch (SQLException e) {
-
-        }
     }
 }
