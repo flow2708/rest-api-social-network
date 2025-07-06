@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import ru.flow.httpserver.utils.CsrfUtils;
 import ru.flow.httpserver.utils.PasswordUtils;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
@@ -21,6 +23,7 @@ public class RegisterServlet extends HttpServlet {
 
         try {
             MySQL db = new MySQL();
+            HttpSession session = req.getSession();
 
             if (db.findByUsername(username) != null) {
                 resp.sendRedirect("register.html?error=exists");
@@ -43,7 +46,8 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            req.getSession().setAttribute("user", new User(username, email, password, 0));
+            session.setAttribute("user", new User(username, email, password, 0));
+            CsrfUtils.generateCSRF(session);
             resp.sendRedirect("mainpage.html");
 
         } catch (Exception e) {
