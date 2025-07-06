@@ -64,7 +64,9 @@ public class MySQL {
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         return DataSource.getConnection(); //DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
-    /**-------------------------------------------users--------------------------------------------------------**/
+                        /**|________________________________________________|**/
+                        /**|                       users                    |**/
+                        /**\________________________________________________/**/
     public boolean saveUser(String username, String email, String password, int socialrating, String ip_address) {
         String insertUser = "INSERT INTO users (username, email, password, socialrating, ip_address) VALUES (?, ?, ?, ?, ?)";
         String hashedPassword = PasswordUtils.hashPassword(password);
@@ -112,8 +114,9 @@ public class MySQL {
         }
         return null;
     }
-    /**------------------------------------------------------------------------------------------------------------------**/
-    /**-------------------------------------------friend_requests--------------------------------------------------------**/
+                            /**|________________________________________________|**/
+                            /**|                 friend_requests                |**/
+                            /**\________________________________________________/**/
     public boolean sendFriendRequest(String sender, String receiver) {
         if (sender.equals(receiver)) {
             throw new IllegalArgumentException("Нельзя отправить запрос самому себе");
@@ -337,8 +340,9 @@ public class MySQL {
 
         return friends;
     }
-    /**------------------------------------------------------------------------------------------------------------------**/
-    /**-------------------------------------------posts--------------------------------------------------------**/
+                                /**|________________________________________________|**/
+                                /**|                      posts                     |**/
+                                /**\________________________________________________/**/
     public boolean createPost(String username, String content) {
         String sql = "INSERT INTO posts (username, content) VALUES (?, ?)";
 
@@ -407,8 +411,9 @@ public class MySQL {
             return false;
         }
     }
-    /**------------------------------------------------------------------------------------------------------------------**/
-    /**-------------------------------------------comments--------------------------------------------------------**/
+                        /**|________________________________________________|**/
+                        /**|                    comments                    |**/
+                        /**\________________________________________________/**/
     public boolean createComment(int post_id, String username, String content) {
         String sql = "INSERT INTO comments (post_id, username, content) VALUES (?, ?, ?) ";
 
