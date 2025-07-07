@@ -20,7 +20,7 @@ public class RegisterServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String ipAddress = req.getHeader("X-FORWARDED-FOR");
-
+        
         try {
             MySQL db = new MySQL();
             HttpSession session = req.getSession();
