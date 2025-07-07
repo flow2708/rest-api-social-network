@@ -11,14 +11,9 @@ public class CsrfUtils {
         session.setAttribute("csrfToken", token);
         return token;
     }
-    public static final boolean isValidCSRF(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return false;
-        }
-        String sessionToken = (String) session.getAttribute("csrfToken");
-        String requestToken = (String) request.getSession().getAttribute("csrfToken");
-
+    public static final boolean isValid(HttpServletRequest request) {
+        String sessionToken = (String) request.getSession().getAttribute("csrfToken");
+        String requestToken = request.getParameter("csrfToken");
         return sessionToken != null && sessionToken.equals(requestToken);
     }
 }
