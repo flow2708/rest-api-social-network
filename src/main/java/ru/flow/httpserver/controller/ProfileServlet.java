@@ -18,7 +18,6 @@ import java.sql.SQLException;
 public class ProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             resp.sendRedirect("login.html");
@@ -40,12 +39,12 @@ public class ProfileServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html lang='ru'>");
             out.println("<head>");
-            out.println("    <meta charset='UTF-8'>");
-            out.println("    <title>Профиль</title>");
-            out.println("    <style>");
-            out.println("        .post { margin: 15px 0; padding: 10px; border: 1px solid #ddd; }");
-            out.println("        .user-avatar { background-color: #3498db; color: white; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }");
-            out.println("    </style>");
+            out.println("<meta charset='UTF-8'>");
+            out.println("<title>Профиль</title>");
+            out.println("<style>");
+            out.println(".post { margin: 15px 0; padding: 10px; border: 1px solid #ddd; }");
+            out.println(".user-avatar { background-color: #3498db; color: white; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }");
+            out.println("</style>");
             out.println("</head>");
             out.println("<body>");
             out.printf("<h1>Профиль: %s</h1>%n", user.getUsername());

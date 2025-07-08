@@ -30,7 +30,9 @@ public class MainPageServlet extends HttpServlet {
         out.println("</head>");
         out.println("<body>");
         out.println("<div class='header'>");
+        out.println("<form action='profile' method='GET'>");
         out.println("<a href='profile'>Мой профиль</a>");
+        out.println("</form>");
         out.println("</div>");
         out.println("<div class='friends'>");
         out.println("<a href='friendsList'>Друзья</a>");
