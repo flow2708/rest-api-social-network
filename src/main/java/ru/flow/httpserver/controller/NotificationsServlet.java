@@ -21,6 +21,7 @@ public class NotificationsServlet extends HttpServlet {
         HttpSession session = req.getSession();
         User currentUser = (User) session.getAttribute("user");
         PrintWriter out = resp.getWriter();
+        String csrfToken = (String) session.getAttribute("csrfToken");
 
         if(currentUser == null) {
             resp.sendRedirect("register.html");
@@ -45,6 +46,7 @@ public class NotificationsServlet extends HttpServlet {
 
                 // Форма принятия
                 out.println("<form action='friendship' method='POST'>");
+                out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                 out.println("<input type='hidden' name='action' value='accept_request'>");
                 out.println("<input type='hidden' name='request_id' value='" + requestId + "'>");
                 out.println("<button type='submit'>Принять</button>");
@@ -52,6 +54,7 @@ public class NotificationsServlet extends HttpServlet {
 
                 // Форма отклонения
                 out.println("<form action='friendship' method='POST'>");
+                out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                 out.println("<input type='hidden' name='action' value='reject_request'>");
                 out.println("<input type='hidden' name='request_id' value='" + requestId + "'>");
                 out.println("<button type='submit'>Отклонить</button>");

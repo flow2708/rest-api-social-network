@@ -28,7 +28,6 @@ public class ProfileServlet extends HttpServlet {
         MySQL db = new MySQL();
         PrintWriter out = resp.getWriter();
         resp.setContentType("text/html;charset=UTF-8");
-
         try {
             // Обновление счётчика посещений
             Integer visitCounter = (Integer) session.getAttribute("visitCounter");
@@ -51,7 +50,9 @@ public class ProfileServlet extends HttpServlet {
             out.printf("<p>Email: %s</p>%n", user.getEmail());
             out.printf("<p>Рейтинг: %d</p>%n", user.getSocialRating());
             out.printf("<p>Посещений: %d</p>%n", visitCounter);
-            out.println("<a href='createPost.html'>Создать пост</a> | <a href='logout'>Выйти</a>");
+            out.println("<form action='createPost' method='GET'>");
+            out.println("<button type=\"submit\">Создать пост</button> | <a href='index.html'>Выйти</a>");
+            out.println("</form>");
             out.println("<h2>Ваши посты:</h2>");
 
             // Вывод постов

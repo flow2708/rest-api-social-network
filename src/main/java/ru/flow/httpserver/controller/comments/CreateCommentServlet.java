@@ -29,7 +29,7 @@ public class CreateCommentServlet extends HttpServlet {
         String content = req.getParameter("content");
 
         if (currentUser == null) {
-            resp.sendRedirect("login.html");
+            resp.sendRedirect("login");
         }
 
         if (content == null || content.trim().isEmpty()) {

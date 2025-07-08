@@ -22,16 +22,17 @@ public class SearchServlet extends HttpServlet {
         String searchQuery = req.getParameter("query");
         HttpSession session = req.getSession();
         User currentUser = (User) session.getAttribute("user");
+        String csrfToken = (String) session.getAttribute("csrfToken");
 
         // Проверка авторизации
         if (currentUser == null) {
-            resp.sendRedirect("login.html?redirect=search&query=" + URLEncoder.encode(searchQuery, "UTF-8"));
+            resp.sendRedirect("login?redirect=search&query=" + URLEncoder.encode(searchQuery, "UTF-8"));
             return;
         }
 
         // Проверка наличия поискового запроса
         if (searchQuery == null || searchQuery.trim().isEmpty()) {
-            resp.sendRedirect("mainpage.html?error=empty_query");
+            resp.sendRedirect("mainpage?error=empty_query");
             return;
         }
 
@@ -40,7 +41,7 @@ public class SearchServlet extends HttpServlet {
 
         // Проверка существования пользователя
         if (foundUser == null) {
-            resp.sendRedirect("mainpage.html?error=user_not_found&query=" + URLEncoder.encode(searchQuery, "UTF-8"));
+            resp.sendRedirect("mainpage?error=user_not_found&query=" + URLEncoder.encode(searchQuery, "UTF-8"));
             return;
         }
 
@@ -70,6 +71,7 @@ public class SearchServlet extends HttpServlet {
         switch (status) {
             case "NOT_EXISTS":
                 out.println("<form action='friendship' method='POST'>");
+                out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                 out.println("<input type='hidden' name='action' value='send_request'>");
                 out.println("<input type='hidden' name='target' value='" + HtmlUtils.escapeHtml(foundUser.getUsername()) + "'>");
                 out.println("<button type='submit'>Добавить в друзья</button>");
@@ -80,12 +82,14 @@ public class SearchServlet extends HttpServlet {
                     if (db.isRequestSender(foundUser.getUsername(), currentUser.getUsername())) {
                         out.println("<p>Ожидает вашего подтверждения</p>");
                         out.println("<form action='friendship' method='POST'>");
+                        out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                         out.println("<input type='hidden' name='action' value='accept_request'>");
 
                         out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
                         out.println("<button type='submit'>Принять</button>");
                         out.println("</form>");
                         out.println("<form action='friendship' method='POST'>");
+                        out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                         out.println("<input type='hidden' name='action' value='reject_request'>");
 
                         out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(foundUser.getUsername(), currentUser.getUsername()) + "'>");
@@ -94,6 +98,7 @@ public class SearchServlet extends HttpServlet {
                     } else {
                         out.println("<p>Запрос отправлен</p>");
                         out.println("<form action='friendship' method='POST'>");
+                        out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                         out.println("<input type='hidden' name='action' value='cancel_request'>");
 
                         out.println("<input type='hidden' name='request_id' value='" + db.getRequestId(currentUser.getUsername(), foundUser.getUsername()) + "'>");
@@ -105,6 +110,7 @@ public class SearchServlet extends HttpServlet {
             case "ACCEPTED":
                 out.println("<p>У вас в друзьях</p>");
                 out.println("<form action='friendship' method='POST'>");
+                out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                 out.println("<input type='hidden' name='action' value='remove_friend'>");
                 out.println("<input type='hidden' name='target' value='" + HtmlUtils.escapeHtml(foundUser.getUsername()) + "'>");
                 out.println("<button type='submit'>Удалить из друзей</button>");
@@ -114,6 +120,7 @@ public class SearchServlet extends HttpServlet {
             case "REJECTED":
                 out.println("<p>Вы отклонили запрос</p>");
                 out.println("<form action='friendship' method='POST'>");
+                out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
                 out.println("<input type='hidden' name='action' value='send_request'>");
                 out.println("<input type='hidden' name='target' value='" + HtmlUtils.escapeHtml(foundUser.getUsername()) + "'>");
                 out.println("<button type='submit'>Отправить запрос</button>");

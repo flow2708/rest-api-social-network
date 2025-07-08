@@ -8,15 +8,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
+import ru.flow.httpserver.utils.CsrfUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 
 @WebServlet("/like")
 public class LikeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!CsrfUtils.isValid(req)) {
+            resp.sendError(403, "Доступ запрещен");
+            return;
+        }
         MySQL db = new MySQL();
 
         HttpSession session = req.getSession();

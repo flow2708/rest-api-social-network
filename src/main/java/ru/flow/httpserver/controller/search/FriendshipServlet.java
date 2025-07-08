@@ -7,14 +7,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
+import ru.flow.httpserver.utils.CsrfUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 
 @WebServlet("/friendship")
 public class FriendshipServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (!CsrfUtils.isValid(req)) {
+            resp.sendError(403, "Доступ запрещен");
+            return;
+        }
         MySQL db = new MySQL();
         String action = req.getParameter("action");
         String targetUsername = req.getParameter("target");

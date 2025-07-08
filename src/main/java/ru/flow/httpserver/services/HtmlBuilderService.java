@@ -19,6 +19,7 @@ public class HtmlBuilderService {
         List<Post> posts = db.getUserPostsList(username);
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
+        String csrfToken = (String) session.getAttribute("csrfToken");
 
         if (posts == null || posts.isEmpty()) {
             out.println("<p>Нет постов</p>");
@@ -37,6 +38,7 @@ public class HtmlBuilderService {
 
             // Форма для лайка (отправляется на сервлет /like)
             out.println("<form class='like-form' action='like' method='POST'>");
+            out.println("<input type='hidden' name='csrfToken' value='" + csrfToken + "'>");
             out.println("<input type='hidden' name='post_id' value='" + post.getPost_id() + "'>");
             out.println("<input type='hidden' name='action' value='" + (isLiked ? "unlike" : "like") + "'>");
             out.println("<button type='submit' class='like-btn " + (isLiked ? "liked" : "") + "'>❤️</button>");
