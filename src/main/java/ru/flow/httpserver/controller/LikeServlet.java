@@ -29,8 +29,7 @@ public class LikeServlet extends HttpServlet {
         String username = currentUser.getUsername();
         int post_id = Integer.parseInt(req.getParameter("post_id"));
         String action = req.getParameter("action");
-
-        PrintWriter out = resp.getWriter();
+        
         boolean success = false;
 
             switch (action) {
