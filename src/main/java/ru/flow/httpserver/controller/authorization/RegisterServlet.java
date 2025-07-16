@@ -52,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
             if (req.getSession() != null) {
                 resp.sendRedirect("mainpage");
             }
-            
+
             HttpSession session = req.getSession();
 
             if (db.findByUsername(username) != null) {
