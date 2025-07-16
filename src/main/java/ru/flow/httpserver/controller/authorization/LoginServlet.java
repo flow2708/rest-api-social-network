@@ -45,6 +45,11 @@ public class LoginServlet extends HttpServlet {
         try {
             MySQL db = new MySQL();
             User user = db.findByUsername(username);
+
+            if (req.getSession() != null) {
+                resp.sendRedirect("mainpage");
+            }
+
             HttpSession session = req.getSession();
 
             if (user == null) {
