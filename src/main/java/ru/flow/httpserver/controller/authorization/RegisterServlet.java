@@ -49,10 +49,6 @@ public class RegisterServlet extends HttpServlet {
         try {
             MySQL db = new MySQL();
 
-            if (req.getSession() != null) {
-                resp.sendRedirect("mainpage");
-            }
-
             HttpSession session = req.getSession();
 
             if (db.findByUsername(username) != null) {

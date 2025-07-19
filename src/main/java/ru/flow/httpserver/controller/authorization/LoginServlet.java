@@ -18,6 +18,14 @@ import java.io.PrintWriter;
 public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+
+        if (session != null) {
+            String csrfToken = CsrfUtils.generateCSRF(session);
+            resp.sendRedirect(req.getContextPath() + "/mainpage?csrfToken=" + csrfToken);
+            return;
+        }
+
         PrintWriter out = resp.getWriter();
         //String csrfToken = CsrfUtils.generateCSRF(req.getSession());
         //req.setAttribute("csrfToken", csrfToken);
@@ -45,10 +53,6 @@ public class LoginServlet extends HttpServlet {
         try {
             MySQL db = new MySQL();
             User user = db.findByUsername(username);
-
-            if (req.getSession() != null) {
-                resp.sendRedirect("mainpage");
-            }
 
             HttpSession session = req.getSession();
 

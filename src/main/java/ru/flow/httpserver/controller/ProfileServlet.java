@@ -51,7 +51,7 @@ public class ProfileServlet extends HttpServlet {
             out.printf("<p>Рейтинг: %d</p>%n", user.getSocialRating());
             out.printf("<p>Посещений: %d</p>%n", visitCounter);
             out.println("<form action='createPost' method='GET'>");
-            out.println("<button type=\"submit\">Создать пост</button> | <a href='index.html'>Выйти</a>");
+            out.println("<button type=\"submit\">Создать пост</button> | <a href='logout'>Выйти</a>");
             out.println("</form>");
             out.println("<h2>Ваши посты:</h2>");
 
