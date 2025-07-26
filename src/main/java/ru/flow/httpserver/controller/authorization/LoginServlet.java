@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.utils.CsrfUtils;
+import ru.flow.httpserver.utils.HtmlUtils;
 import ru.flow.httpserver.utils.PasswordUtils;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
@@ -20,7 +21,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
 
-        if (session != null) {
+        if (session != null && session.getAttribute("user") != null) {
             String csrfToken = CsrfUtils.generateCSRF(session);
             resp.sendRedirect(req.getContextPath() + "/mainpage?csrfToken=" + csrfToken);
             return;
@@ -48,7 +49,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }*/
 
-        String username = req.getParameter("username");
+        String username = HtmlUtils.escapeHtml(req.getParameter("username"));
         String password = req.getParameter("password");
         try {
             MySQL db = new MySQL();

@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.utils.CsrfUtils;
+import ru.flow.httpserver.utils.HtmlUtils;
 import ru.flow.httpserver.utils.PasswordUtils;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
@@ -41,7 +42,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }*/
 
-        String username = req.getParameter("username");
+        String username = HtmlUtils.escapeHtml(req.getParameter("username"));
         String email = req.getParameter("email");
         String password = req.getParameter("password");
         String ipAddress = req.getHeader("X-FORWARDED-FOR");
@@ -59,7 +60,7 @@ public class RegisterServlet extends HttpServlet {
             try {
                 PasswordUtils.validate(password);
             } catch (IllegalArgumentException e) {
-                resp.sendRedirect("login?error=incorrect_password_format");
+                resp.sendRedirect("register?error=incorrect_password_format");
                 return;
             }
 

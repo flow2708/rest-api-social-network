@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 import ru.flow.httpserver.services.HtmlBuilderService;
+import ru.flow.httpserver.utils.HtmlUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,7 +47,7 @@ public class ProfileServlet extends HttpServlet {
             out.println("</style>");
             out.println("</head>");
             out.println("<body>");
-            out.printf("<h1>Профиль: %s</h1>%n", user.getUsername());
+            out.printf("<h1>Профиль: %s</h1>%n", HtmlUtils.escapeHtml(user.getUsername()));
             out.printf("<p>Email: %s</p>%n", user.getEmail());
             out.printf("<p>Рейтинг: %d</p>%n", user.getSocialRating());
             out.printf("<p>Посещений: %d</p>%n", visitCounter);
