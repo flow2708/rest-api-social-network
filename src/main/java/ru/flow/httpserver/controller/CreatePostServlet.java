@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import ru.flow.httpserver.dao.MySQL;
 import ru.flow.httpserver.entities.User;
 import ru.flow.httpserver.utils.CsrfUtils;
+import ru.flow.httpserver.utils.HtmlUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -100,7 +101,7 @@ public class CreatePostServlet extends HttpServlet {
         MySQL db = new MySQL();
         HttpSession session = req.getSession();
         User currentUser = (User) session.getAttribute("user");
-        String content = req.getParameter("content");
+        String content = HtmlUtils.escapeHtml(req.getParameter("content"));
 
         if (currentUser == null) {
             resp.sendRedirect("login");
