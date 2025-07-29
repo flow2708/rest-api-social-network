@@ -24,7 +24,7 @@ public class InitServlet extends HttpServlet {
             System.out.println("БД успешно инициализирована");
         } catch (Exception e) {
             System.err.println("Критическая ошибка инициализации БД:");
-            e.printStackTrace();
+            e.printStackTrace()
             throw new ServletException("Ошибка инициализации БД: " + e.getMessage(), e);
         }
     }
