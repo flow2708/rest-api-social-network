@@ -1,9 +1,0 @@
-<meta charset="UTF-8">
-<form action="register" method="POST" xmlns:th="http://www.w3.org/1999/xhtml">
-  <input type="hidden" name="csrfToken" th:value="${csrfToken}">
-  <input type="text" name="username" placeholder="Логин" required>
-  <input type="email" name="email" placeholder="Email" required>
-  <input type="password" name="password" placeholder="Пароль" required>
-  <button type="submit">Зарегистрироваться</button>
-  <a href="login.html">Уже есть аккаунт?</a>
-</form>

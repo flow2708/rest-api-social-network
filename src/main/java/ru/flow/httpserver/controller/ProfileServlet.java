@@ -21,7 +21,7 @@ public class ProfileServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            resp.sendRedirect("login.html");
+            resp.sendRedirect("login");
             return;
         }
 

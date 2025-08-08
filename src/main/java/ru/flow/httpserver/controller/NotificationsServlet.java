@@ -11,7 +11,6 @@ import ru.flow.httpserver.entities.User;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/notifications")
@@ -24,7 +23,7 @@ public class NotificationsServlet extends HttpServlet {
         String csrfToken = (String) session.getAttribute("csrfToken");
 
         if(currentUser == null) {
-            resp.sendRedirect("register.html");
+            resp.sendRedirect("login");
             return; // Добавлен return для прерывания выполнения
         }
 
