@@ -1,4 +1,4 @@
-# Java HTTP Server
+
 
 [![Java Version](https://img.shields.io/badge/Java-21%2B-blue)](https://openjdk.org/)
 [![Gradle Build](https://img.shields.io/badge/Gradle-8.5%2B-green)](https://gradle.org/)
